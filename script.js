@@ -61,10 +61,7 @@ const DOM = {
     progressBar: document.getElementById('progress-bar'),
     prevBtn: document.getElementById('prev-btn'),
     resultsGrid: document.getElementById('results-grid'),
-    restartBtn: document.getElementById('restart-btn'),
-    modal: document.getElementById('details-modal'),
-    modalBody: document.getElementById('modal-body'),
-    closeModalBtn: document.getElementById('close-modal-btn')
+    restartBtn: document.getElementById('restart-btn')
 };
 
 function initApp() {
@@ -74,28 +71,17 @@ function initApp() {
     
     DOM.quizSection.classList.remove('hidden');
     DOM.resultsSection.classList.add('hidden');
-    DOM.modal.classList.add('hidden');
     
     renderStep();
     
-    // Remove old listeners to avoid duplicates
     DOM.prevBtn.replaceWith(DOM.prevBtn.cloneNode(true));
     DOM.restartBtn.replaceWith(DOM.restartBtn.cloneNode(true));
-    DOM.closeModalBtn.replaceWith(DOM.closeModalBtn.cloneNode(true));
     
-    // Re-select after cloning
     DOM.prevBtn = document.getElementById('prev-btn');
     DOM.restartBtn = document.getElementById('restart-btn');
-    DOM.closeModalBtn = document.getElementById('close-modal-btn');
     
     DOM.prevBtn.addEventListener('click', handlePrev);
     DOM.restartBtn.addEventListener('click', initApp);
-    DOM.closeModalBtn.addEventListener('click', closeModal);
-    
-    // Close modal on outside click
-    DOM.modal.addEventListener('click', (e) => {
-        if(e.target === DOM.modal) closeModal();
-    });
 }
 
 function getActiveQuestions() {
@@ -241,94 +227,87 @@ function calculateRecommendations() {
     renderRecommendations(currentRecommendations);
 }
 
+function getSeasonTempStr(tempObj, selectedSeason) {
+    if (!tempObj) return "-";
+    // If user selected a season, show that specific temp. Otherwise show spring as default or something.
+    if (selectedSeason && tempObj[selectedSeason]) {
+        let seasonKor = { 'spring': '봄', 'summer': '여름', 'autumn': '가을', 'winter': '겨울' }[selectedSeason];
+        return `${tempObj[selectedSeason]} (${seasonKor})`;
+    }
+    return tempObj['spring'] || "-";
+}
+
 function renderRecommendations(recs) {
     if (recs.length === 0) {
         DOM.resultsGrid.innerHTML = '<p>조건에 맞는 여행지를 찾지 못했습니다.</p>';
         return;
     }
 
-    const html = recs.map((dest, index) => `
+    const html = recs.map((dest, index) => {
+        const tempStr = getSeasonTempStr(dest.quickInfo.temp, userAnswers.season);
+        
+        let domesticHtml = '';
+        if (dest.location === 'domestic' && dest.domesticDetails) {
+            const userSeason = userAnswers.season || 'spring';
+            const userDuration = userAnswers.duration || '1-3';
+            
+            const weatherDesc = dest.domesticDetails.weatherDesc[userSeason] || dest.domesticDetails.weatherDesc['spring'];
+            const courseDesc = dest.domesticDetails.courses[userDuration] || dest.domesticDetails.courses['1-3'];
+            const seasonKor = { 'spring': '봄', 'summer': '여름', 'autumn': '가을', 'winter': '겨울' }[userSeason];
+
+            domesticHtml = `
+                <div class="domestic-details" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed rgba(0,0,0,0.1);">
+                    <h4 style="margin-bottom: 0.8rem; color: var(--primary);">✨ 국내 여행 상세 정보</h4>
+                    <div style="display: grid; gap: 0.8rem; font-size: 0.95rem;">
+                        <p><strong>📸 인기 관광지:</strong> ${dest.domesticDetails.spots}</p>
+                        <p><strong>🍜 추천 맛집:</strong> ${dest.domesticDetails.food}</p>
+                        <p><strong>🌤️ ${seasonKor} 날씨:</strong> ${weatherDesc}</p>
+                        <p><strong>🗺️ 추천 코스 (${userAnswers.duration || '1-3'}일):</strong> ${courseDesc}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        return `
         <div class="destination-card animate-fade-in" style="animation-delay: ${index * 0.1}s">
             <img src="${dest.image}" alt="${dest.name}" class="card-img">
             <div class="card-content">
                 <h3 class="card-title">${dest.name}</h3>
                 <p class="card-desc">${dest.description}</p>
+                
+                <div class="info-badges">
+                    <div class="badge">
+                        <div class="badge-title">📅 추천월</div>
+                        <div class="badge-value">${dest.quickInfo.months}</div>
+                    </div>
+                    <div class="badge">
+                        <div class="badge-title">✈️ 항공</div>
+                        <div class="badge-value">${dest.quickInfo.flight}</div>
+                    </div>
+                    <div class="badge">
+                        <div class="badge-title">🛂 비자</div>
+                        <div class="badge-value">${dest.quickInfo.visa}</div>
+                    </div>
+                    <div class="badge">
+                        <div class="badge-title">🌡️ 평균온도</div>
+                        <div class="badge-value">${tempStr}</div>
+                    </div>
+                    <div class="badge">
+                        <div class="badge-title">🔌 전압</div>
+                        <div class="badge-value">${dest.quickInfo.voltage}</div>
+                    </div>
+                </div>
+
                 <div class="card-tags">
                     ${dest.style.map(s => `<span class="tag">#${styleTranslations[s] || s}</span>`).join('')}
                 </div>
-                <button class="btn-details mt-4" data-id="${dest.id}">자세히 보기</button>
+                
+                ${domesticHtml}
             </div>
         </div>
-    `).join('');
+    `}).join('');
 
     DOM.resultsGrid.innerHTML = html;
-
-    // Attach event listeners for details buttons
-    const detailBtns = document.querySelectorAll('.btn-details');
-    detailBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => openModal(btn.dataset.id));
-    });
-}
-
-function openModal(destId) {
-    const dest = destinations.find(d => d.id === destId);
-    if(!dest || !dest.details) return;
-
-    // Get the season string the user selected, or default to all if not selected
-    const userSeasonKey = userAnswers.season; 
-    let seasonText = '';
-    switch(userSeasonKey) {
-        case 'spring': seasonText = '🌸 봄(3~5월)'; break;
-        case 'summer': seasonText = '☀️ 여름(6~8월)'; break;
-        case 'autumn': seasonText = '🍁 가을(9~11월)'; break;
-        case 'winter': seasonText = '❄️ 겨울(12~2월)'; break;
-        default: seasonText = '선택한 계절';
-    }
-
-    const weatherInfo = userSeasonKey && dest.details.weather[userSeasonKey] 
-                        ? dest.details.weather[userSeasonKey] 
-                        : "사계절 내내 다양한 매력이 있는 곳입니다.";
-
-    const html = `
-        <div class="detail-header">
-            <h3>${dest.name}</h3>
-            <p class="detail-reason">💡 추천 이유: ${dest.details.reason}</p>
-        </div>
-        
-        <div class="detail-section">
-            <h4>${seasonText} 날씨 🌤️</h4>
-            <p>${weatherInfo}</p>
-        </div>
-
-        <div class="detail-section">
-            <h4>추천 명소 및 도시 📸</h4>
-            <p>${dest.details.spots}</p>
-        </div>
-
-        <div class="detail-section">
-            <h4>꼭 먹어봐야 할 맛집/음식 🍜</h4>
-            <p>${dest.details.food}</p>
-        </div>
-
-        <div class="detail-section">
-            <h4>추천 코스 (3일 기준) 🗺️</h4>
-            <p>${dest.details.course}</p>
-        </div>
-
-        <div class="detail-section">
-            <h4>화폐 💱</h4>
-            <p>${dest.details.currency}</p>
-        </div>
-    `;
-
-    DOM.modalBody.innerHTML = html;
-    DOM.modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden'; // Prevent background scrolling
-}
-
-function closeModal() {
-    DOM.modal.classList.add('hidden');
-    document.body.style.overflow = 'auto'; // Restore scrolling
 }
 
 // Start

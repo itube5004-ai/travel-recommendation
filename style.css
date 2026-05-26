@@ -191,8 +191,8 @@ body {
 
 .results-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: 1fr; /* Change to single column so badges have room */
+    gap: 2rem;
     margin-bottom: 2rem;
 }
 
@@ -242,7 +242,7 @@ body {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-bottom: 1rem;
+    margin-top: 1rem;
 }
 
 .tag {
@@ -254,22 +254,36 @@ body {
     font-weight: 600;
 }
 
-.btn-details {
-    background: transparent;
-    border: 2px solid var(--primary);
-    color: var(--primary);
-    padding: 0.6rem 1rem;
-    border-radius: 20px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    width: 100%;
-    text-align: center;
+/* Info Badges (Naver style) */
+.info-badges {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 0.8rem;
+    margin: 1.5rem 0;
 }
 
-.btn-details:hover {
-    background: var(--primary);
-    color: white;
+.badge {
+    background: rgba(240, 242, 245, 0.9);
+    padding: 0.8rem 1rem;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.badge-title {
+    font-size: 0.85rem;
+    color: #666;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.badge-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--dark);
 }
 
 /* Buttons */
