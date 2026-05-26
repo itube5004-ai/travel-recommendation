@@ -269,19 +269,19 @@ function renderRecommendations(recs) {
     const html = recs.map((dest, index) => {
         const tempStr = getSeasonTempStr(dest.quickInfo.temp, userSeason);
         
-        let domesticHtml = '';
-        if (dest.location === 'domestic' && dest.domesticDetails) {
+        let detailsHtml = '';
+        if (dest.details) {
             const userDuration = userAnswers.duration || '1-3';
             
-            const weatherDesc = dest.domesticDetails.weatherDesc[userSeason] || dest.domesticDetails.weatherDesc['spring'];
-            const courseDesc = dest.domesticDetails.courses[userDuration] || dest.domesticDetails.courses['1-3'];
+            const weatherDesc = dest.details.weatherDesc[userSeason] || dest.details.weatherDesc['spring'];
+            const courseDesc = dest.details.courses[userDuration] || dest.details.courses['1-3'];
 
-            domesticHtml = `
+            detailsHtml = `
                 <div class="domestic-details" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed rgba(0,0,0,0.1);">
-                    <h4 style="margin-bottom: 0.8rem; color: var(--primary);">✨ 국내 여행 상세 정보</h4>
+                    <h4 style="margin-bottom: 0.8rem; color: var(--primary);">✨ 여행 상세 정보</h4>
                     <div style="display: grid; gap: 0.8rem; font-size: 0.95rem;">
-                        <p><strong>📸 인기 관광지:</strong> ${dest.domesticDetails.spots}</p>
-                        <p><strong>🍜 추천 맛집:</strong> ${dest.domesticDetails.food}</p>
+                        <p><strong>📸 인기 관광지:</strong> ${dest.details.spots}</p>
+                        <p><strong>🍜 추천 맛집:</strong> ${dest.details.food}</p>
                         <p><strong>🌤️ ${displayMonth} 날씨:</strong> ${weatherDesc}</p>
                         <p><strong>🗺️ 추천 코스 (${userAnswers.duration || '1-3'}일):</strong> ${courseDesc}</p>
                     </div>
@@ -302,28 +302,32 @@ function renderRecommendations(recs) {
                         <div class="badge-value">${dest.quickInfo.months}</div>
                     </div>
                     <div class="badge">
-                        <div class="badge-title">✈️ 항공</div>
+                        <div class="badge-title">${dest.location === 'domestic' ? '🚗 추천 교통' : '✈️ 항공'}</div>
                         <div class="badge-value">${dest.quickInfo.flight}</div>
                     </div>
+                    ${dest.location === 'international' ? `
                     <div class="badge">
                         <div class="badge-title">🛂 비자</div>
                         <div class="badge-value">${dest.quickInfo.visa}</div>
                     </div>
+                    ` : ''}
                     <div class="badge">
                         <div class="badge-title">🌡️ 평균온도</div>
                         <div class="badge-value">${tempStr}</div>
                     </div>
+                    ${dest.location === 'international' ? `
                     <div class="badge">
                         <div class="badge-title">🔌 전압</div>
                         <div class="badge-value">${dest.quickInfo.voltage}</div>
                     </div>
+                    ` : ''}
                 </div>
 
                 <div class="card-tags">
                     ${dest.style.map(s => `<span class="tag">#${styleTranslations[s] || s}</span>`).join('')}
                 </div>
                 
-                ${domesticHtml}
+                ${detailsHtml}
             </div>
         </div>
     `}).join('');
