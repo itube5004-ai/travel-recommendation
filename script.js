@@ -98,6 +98,29 @@ function getActiveQuestions() {
             return q.condition(userAnswers);
         }
         return true;
+    }).map(q => {
+        if (q.id === 'duration') {
+            if (userAnswers.location === 'domestic') {
+                return {
+                    ...q,
+                    options: [
+                        { value: 'day', label: '당일 치기', icon: '🚄' },
+                        { value: '2-3', label: '2~3일', icon: '🎒' },
+                        { value: '4-5', label: '4~5일', icon: '🧳' }
+                    ]
+                };
+            } else {
+                return {
+                    ...q,
+                    options: [
+                        { value: '2-3', label: '2~3일', icon: '🎒' },
+                        { value: '4-6', label: '4~6일', icon: '🧳' },
+                        { value: '7-14', label: '1주~2주', icon: '✈️' }
+                    ]
+                };
+            }
+        }
+        return q;
     });
 }
 
@@ -271,10 +294,13 @@ function renderRecommendations(recs) {
         
         let detailsHtml = '';
         if (dest.details) {
-            const userDuration = userAnswers.duration || '1-3';
+            const userDuration = userAnswers.duration || '2-3';
             
             const weatherDesc = dest.details.weatherDesc[userSeason] || dest.details.weatherDesc['spring'];
-            const courseDesc = dest.details.courses[userDuration] || dest.details.courses['1-3'];
+            const courseDesc = dest.details.courses[userDuration] || Object.values(dest.details.courses)[0];
+            
+            const durationQuestion = activeQuestions.find(q => q.id === 'duration');
+            const durationLabel = durationQuestion ? (durationQuestion.options.find(o => o.value === userDuration)?.label || userDuration) : userDuration;
 
             detailsHtml = `
                 <div class="domestic-details" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed rgba(0,0,0,0.1);">
@@ -284,7 +310,7 @@ function renderRecommendations(recs) {
                         <p><strong>🍜 추천 맛집:</strong> ${dest.details.food}</p>
                         <p><strong>🏨 추천 숙소:</strong> ${dest.details.hotel}</p>
                         <p><strong>🌤️ ${displayMonth} 날씨:</strong> ${weatherDesc}</p>
-                        <p><strong>🗺️ 추천 코스 (${userAnswers.duration || '1-3'}일):</strong> ${courseDesc}</p>
+                        <p><strong>🗺️ 추천 코스 (${durationLabel}):</strong> ${courseDesc}</p>
                     </div>
                 </div>
             `;
