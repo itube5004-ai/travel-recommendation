@@ -68,6 +68,16 @@ const destinations = [
     image: 'https://loremflickr.com/800/600/taipei,night/all',
     description: '다채로운 길거리 음식과 지우펀의 야경, 친절한 사람들이 있는 곳.',
   },
+  {
+    id: 'i10',
+    name: '오키나와, 일본 (Okinawa, Japan)',
+    location: 'international',
+    flight: 'short',
+    duration: ['1-3', '4-7'],
+    style: ['relaxation', 'nature', 'family'],
+    image: 'https://loremflickr.com/800/600/okinawa,beach/all',
+    description: '가깝게 만나는 에메랄드빛 바다. 여름 휴양으로 최고지만 9~10월 태풍은 조심하세요!',
+  },
 
   // International - Medium Flight (3-6 hours)
   {
@@ -131,5 +141,25 @@ const destinations = [
     style: ['city', 'nature', 'relaxation'],
     image: 'https://loremflickr.com/800/600/sydney,opera/all',
     description: '오페라 하우스와 하버 브리지, 푸른 바다가 어우러진 남반구의 매력적인 도시.',
+  },
+  {
+    id: 'i11',
+    name: '스위스 (Switzerland)',
+    location: 'international',
+    flight: 'long',
+    duration: ['8+'],
+    style: ['nature', 'relaxation', 'adventure'],
+    image: 'https://loremflickr.com/800/600/switzerland,alps/all',
+    description: '유튜브 추천! 무더운 여름 유럽에서 시원하게 알프스 대자연을 즐길 수 있는 최고의 선택지.',
+  },
+  {
+    id: 'i12',
+    name: '우유니 사막, 볼리비아 (Uyuni, Bolivia)',
+    location: 'international',
+    flight: 'long',
+    duration: ['8+'],
+    style: ['nature', 'adventure'],
+    image: 'https://loremflickr.com/800/600/uyuni,salt/all',
+    description: '유튜브 추천! 직장인의 긴 연차를 100% 활용할 수 있는 지구 반대편의 초현실적인 소금 사막.',
   }
 ];
