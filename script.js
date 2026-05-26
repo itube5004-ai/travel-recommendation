@@ -3,7 +3,7 @@ const quizQuestions = [
         id: 'location',
         question: '어디로 떠나고 싶으신가요?',
         options: [
-            { value: 'domestic', label: '국내 (Korea)', icon: '<img src="https://flagcdn.com/w80/kr.png" alt="태극기" style="width: 32px; height: auto; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">' },
+            { value: 'domestic', label: '국내 (Korea)', icon: '🚗' },
             { value: 'international', label: '해외 (International)', icon: '✈️' }
         ]
     },
