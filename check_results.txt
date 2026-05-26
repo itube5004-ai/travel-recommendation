@@ -1,0 +1,2 @@
+﻿Remaining unclosed { count: 0
+Remaining unclosed [ count: 0
