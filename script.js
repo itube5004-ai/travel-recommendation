@@ -8,13 +8,21 @@ const quizQuestions = [
         ]
     },
     {
-        id: 'season',
+        id: 'month',
         question: '언제 떠나실 예정인가요?',
         options: [
-            { value: 'spring', label: '봄 (3~5월)', icon: '🌸' },
-            { value: 'summer', label: '여름 (6~8월)', icon: '☀️' },
-            { value: 'autumn', label: '가을 (9~11월)', icon: '🍁' },
-            { value: 'winter', label: '겨울 (12~2월)', icon: '❄️' }
+            { value: '1', label: '1월', icon: '❄️' },
+            { value: '2', label: '2월', icon: '❄️' },
+            { value: '3', label: '3월', icon: '🌸' },
+            { value: '4', label: '4월', icon: '🌸' },
+            { value: '5', label: '5월', icon: '🌸' },
+            { value: '6', label: '6월', icon: '☀️' },
+            { value: '7', label: '7월', icon: '☀️' },
+            { value: '8', label: '8월', icon: '☀️' },
+            { value: '9', label: '9월', icon: '🍁' },
+            { value: '10', label: '10월', icon: '🍁' },
+            { value: '11', label: '11월', icon: '🍁' },
+            { value: '12', label: '12월', icon: '❄️' }
         ]
     },
     {
@@ -184,6 +192,16 @@ const styleTranslations = {
     'romantic': '로맨틱'
 };
 
+function getSeasonFromMonth(month) {
+    if (!month) return 'spring';
+    const m = parseInt(month);
+    if ([3, 4, 5].includes(m)) return 'spring';
+    if ([6, 7, 8].includes(m)) return 'summer';
+    if ([9, 10, 11].includes(m)) return 'autumn';
+    if ([12, 1, 2].includes(m)) return 'winter';
+    return 'spring';
+}
+
 function calculateRecommendations() {
     let scoredDestinations = destinations.map(dest => {
         let score = 0;
@@ -206,7 +224,9 @@ function calculateRecommendations() {
             score += 5;
         }
 
-        if (dest.bestSeasons && dest.bestSeasons.includes(userAnswers.season)) {
+        const userSeason = getSeasonFromMonth(userAnswers.month);
+        
+        if (dest.bestSeasons && dest.bestSeasons.includes(userSeason)) {
             score += 5;
         } else if (dest.bestSeasons) {
             score -= 2;
@@ -243,17 +263,18 @@ function renderRecommendations(recs) {
         return;
     }
 
+    const userSeason = getSeasonFromMonth(userAnswers.month);
+    const displayMonth = userAnswers.month ? `${userAnswers.month}월` : '선택한 달';
+
     const html = recs.map((dest, index) => {
-        const tempStr = getSeasonTempStr(dest.quickInfo.temp, userAnswers.season);
+        const tempStr = getSeasonTempStr(dest.quickInfo.temp, userSeason);
         
         let domesticHtml = '';
         if (dest.location === 'domestic' && dest.domesticDetails) {
-            const userSeason = userAnswers.season || 'spring';
             const userDuration = userAnswers.duration || '1-3';
             
             const weatherDesc = dest.domesticDetails.weatherDesc[userSeason] || dest.domesticDetails.weatherDesc['spring'];
             const courseDesc = dest.domesticDetails.courses[userDuration] || dest.domesticDetails.courses['1-3'];
-            const seasonKor = { 'spring': '봄', 'summer': '여름', 'autumn': '가을', 'winter': '겨울' }[userSeason];
 
             domesticHtml = `
                 <div class="domestic-details" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed rgba(0,0,0,0.1);">
@@ -261,7 +282,7 @@ function renderRecommendations(recs) {
                     <div style="display: grid; gap: 0.8rem; font-size: 0.95rem;">
                         <p><strong>📸 인기 관광지:</strong> ${dest.domesticDetails.spots}</p>
                         <p><strong>🍜 추천 맛집:</strong> ${dest.domesticDetails.food}</p>
-                        <p><strong>🌤️ ${seasonKor} 날씨:</strong> ${weatherDesc}</p>
+                        <p><strong>🌤️ ${displayMonth} 날씨:</strong> ${weatherDesc}</p>
                         <p><strong>🗺️ 추천 코스 (${userAnswers.duration || '1-3'}일):</strong> ${courseDesc}</p>
                     </div>
                 </div>
