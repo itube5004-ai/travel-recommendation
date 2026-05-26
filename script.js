@@ -3,7 +3,7 @@ const quizQuestions = [
         id: 'location',
         question: '어디로 떠나고 싶으신가요?',
         options: [
-            { value: 'domestic', label: '국내 (Korea)', icon: '🇰🇷' },
+            { value: 'domestic', label: '국내 (Korea)', icon: '<img src="https://flagcdn.com/w80/kr.png" alt="태극기" style="width: 32px; height: auto; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">' },
             { value: 'international', label: '해외 (International)', icon: '✈️' }
         ]
     },
@@ -282,6 +282,7 @@ function renderRecommendations(recs) {
                     <div style="display: grid; gap: 0.8rem; font-size: 0.95rem;">
                         <p><strong>📸 인기 관광지:</strong> ${dest.details.spots}</p>
                         <p><strong>🍜 추천 맛집:</strong> ${dest.details.food}</p>
+                        <p><strong>🏨 추천 숙소:</strong> ${dest.details.hotel}</p>
                         <p><strong>🌤️ ${displayMonth} 날씨:</strong> ${weatherDesc}</p>
                         <p><strong>🗺️ 추천 코스 (${userAnswers.duration || '1-3'}일):</strong> ${courseDesc}</p>
                     </div>
