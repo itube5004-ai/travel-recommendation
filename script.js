@@ -235,8 +235,12 @@ function calculateRecommendations() {
             score -= 100;
         }
 
-        if (dest.duration && dest.duration.includes(userAnswers.duration)) {
-            score += 5;
+        if (dest.duration) {
+            if (dest.duration.includes(userAnswers.duration)) {
+                score += 10;
+            } else {
+                score -= 50; // 일정이 불가능한 경우 강력하게 제외
+            }
         }
 
         if (userAnswers.flight && dest.flight === userAnswers.flight) {
@@ -310,6 +314,7 @@ function renderRecommendations(recs) {
                         <p><strong>🍜 추천 맛집:</strong> ${dest.details.food}</p>
                         <p><strong>🏨 추천 숙소:</strong> ${dest.details.hotel}</p>
                         <p><strong>🌤️ ${displayMonth} 날씨:</strong> ${weatherDesc}</p>
+                        ${dest.location === 'international' && dest.details.shopping ? `<p><strong>🎁 추천 쇼핑/선물:</strong> ${dest.details.shopping}</p>` : ''}
                         <p><strong>🗺️ 추천 코스 (${durationLabel}):</strong> ${courseDesc}</p>
                     </div>
                 </div>
