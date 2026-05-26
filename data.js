@@ -6,7 +6,7 @@ const destinations = [
     location: 'domestic',
     duration: ['1-3', '4-7'],
     style: ['relaxation', 'nature', 'food'],
-    image: 'https://images.unsplash.com/photo-1589370830491-0306385a8553?auto=format&fit=crop&q=80&w=800',
+    image: 'https://loremflickr.com/800/600/jeju,nature/all',
     description: '에메랄드빛 바다와 아름다운 오름, 맛있는 흑돼지와 해산물이 있는 환상의 섬.',
   },
   {
@@ -15,7 +15,7 @@ const destinations = [
     location: 'domestic',
     duration: ['1-3'],
     style: ['city', 'food', 'nightlife'],
-    image: 'https://images.unsplash.com/photo-1616421946029-7c30089ffb57?auto=format&fit=crop&q=80&w=800',
+    image: 'https://loremflickr.com/800/600/busan,city/all',
     description: '해운대의 화려한 야경과 맛있는 밀면, 돼지국밥! 활기찬 해양 도시.',
   },
   {
@@ -24,7 +24,7 @@ const destinations = [
     location: 'domestic',
     duration: ['1-3'],
     style: ['relaxation', 'food', 'nature'],
-    image: 'https://images.unsplash.com/photo-1598006199341-c1e1562b5d49?auto=format&fit=crop&q=80&w=800',
+    image: 'https://loremflickr.com/800/600/sokcho,beach/all',
     description: '시원한 동해 바다와 설악산, 그리고 신선한 회와 닭강정.',
   },
   {
@@ -33,7 +33,7 @@ const destinations = [
     location: 'domestic',
     duration: ['1-3', '4-7'],
     style: ['history', 'culture', 'relaxation'],
-    image: 'https://images.unsplash.com/photo-1596706037042-45e0d79d854e?auto=format&fit=crop&q=80&w=800',
+    image: 'https://loremflickr.com/800/600/gyeongju,temple/all',
     description: '천년의 역사가 숨 쉬는 곳. 황리단길의 트렌디함과 고즈넉한 한옥의 조화.',
   },
 
@@ -45,7 +45,7 @@ const destinations = [
     flight: 'short',
     duration: ['1-3', '4-7'],
     style: ['food', 'city', 'shopping'],
-    image: 'https://images.unsplash.com/photo-1590559899731-a382839ceab5?auto=format&fit=crop&q=80&w=800',
+    image: 'https://loremflickr.com/800/600/osaka,street/all',
     description: '먹다가 망한다는 미식의 도시. 화려한 도톤보리와 유니버셜 스튜디오.',
   },
   {
@@ -55,7 +55,7 @@ const destinations = [
     flight: 'short',
     duration: ['1-3'],
     style: ['food', 'relaxation', 'shopping'],
-    image: 'https://images.unsplash.com/photo-1522850959516-58f9589ebecd?auto=format&fit=crop&q=80&w=800',
+    image: 'https://loremflickr.com/800/600/fukuoka,food/all',
     description: '가깝고 맛있는 도시. 돈코츠 라멘의 본고장과 따뜻한 온천 여행.',
   },
   {
@@ -65,7 +65,7 @@ const destinations = [
     flight: 'short',
     duration: ['1-3', '4-7'],
     style: ['food', 'culture', 'nightlife'],
-    image: 'https://images.unsplash.com/photo-1552993873-0aa0cc099049?auto=format&fit=crop&q=80&w=800',
+    image: 'https://loremflickr.com/800/600/taipei,night/all',
     description: '다채로운 길거리 음식과 지우펀의 야경, 친절한 사람들이 있는 곳.',
   },
 
@@ -77,7 +77,7 @@ const destinations = [
     flight: 'medium',
     duration: ['4-7'],
     style: ['relaxation', 'food', 'family'],
-    image: 'https://images.unsplash.com/photo-1583417646487-1950e82c1613?auto=format&fit=crop&q=80&w=800',
+    image: 'https://loremflickr.com/800/600/danang,beach/all',
     description: '가성비 최고의 휴양지. 아름다운 해변과 저렴하고 맛있는 로컬 푸드.',
   },
   {
@@ -87,7 +87,7 @@ const destinations = [
     flight: 'medium',
     duration: ['4-7'],
     style: ['food', 'nightlife', 'shopping', 'culture'],
-    image: 'https://images.unsplash.com/photo-1583491470869-d8e788090728?auto=format&fit=crop&q=80&w=800',
+    image: 'https://loremflickr.com/800/600/bangkok,temple/all',
     description: '화려한 사원과 끝없는 길거리 음식, 저렴한 마사지와 생동감 넘치는 도시.',
   },
   {
@@ -97,7 +97,7 @@ const destinations = [
     flight: 'medium',
     duration: ['4-7'],
     style: ['relaxation', 'shopping', 'family', 'nature'],
-    image: 'https://images.unsplash.com/photo-1632788390977-b89e7cb28189?auto=format&fit=crop&q=80&w=800',
+    image: 'https://loremflickr.com/800/600/guam,ocean/all',
     description: '태평양의 에메랄드빛 바다. 쇼핑과 해양 스포츠를 동시에 즐길 수 있는 휴양지.',
   },
 
@@ -109,7 +109,7 @@ const destinations = [
     flight: 'long',
     duration: ['8+'],
     style: ['culture', 'history', 'shopping', 'romantic'],
-    image: 'https://images.unsplash.com/photo-1502602898657-3e907a5ea571?auto=format&fit=crop&q=80&w=800',
+    image: 'https://loremflickr.com/800/600/paris,eiffel/all',
     description: '에펠탑과 루브르 박물관, 낭만적인 센 강변을 거니는 유럽 여행의 로망.',
   },
   {
@@ -119,7 +119,7 @@ const destinations = [
     flight: 'long',
     duration: ['8+', '4-7'],
     style: ['relaxation', 'nature', 'adventure', 'romantic'],
-    image: 'https://images.unsplash.com/photo-1542259009477-d625272157b7?auto=format&fit=crop&q=80&w=800',
+    image: 'https://loremflickr.com/800/600/hawaii,resort/all',
     description: '지상 낙원. 완벽한 날씨, 아름다운 해변, 그리고 알로하 스피릿.',
   },
   {
@@ -129,7 +129,7 @@ const destinations = [
     flight: 'long',
     duration: ['8+'],
     style: ['city', 'nature', 'relaxation'],
-    image: 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&q=80&w=800',
+    image: 'https://loremflickr.com/800/600/sydney,opera/all',
     description: '오페라 하우스와 하버 브리지, 푸른 바다가 어우러진 남반구의 매력적인 도시.',
   }
 ];
