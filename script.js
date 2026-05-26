@@ -8,6 +8,16 @@ const quizQuestions = [
         ]
     },
     {
+        id: 'season',
+        question: '언제 떠나실 예정인가요?',
+        options: [
+            { value: 'spring', label: '봄 (3~5월)', icon: '🌸' },
+            { value: 'summer', label: '여름 (6~8월)', icon: '☀️' },
+            { value: 'autumn', label: '가을 (9~11월)', icon: '🍁' },
+            { value: 'winter', label: '겨울 (12~2월)', icon: '❄️' }
+        ]
+    },
+    {
         id: 'duration',
         question: '여행 기간은 며칠이 좋은가요?',
         options: [
@@ -42,6 +52,7 @@ const quizQuestions = [
 let currentStep = 0;
 let userAnswers = {};
 let activeQuestions = [];
+let currentRecommendations = [];
 
 const DOM = {
     quizSection: document.getElementById('quiz-section'),
@@ -50,7 +61,10 @@ const DOM = {
     progressBar: document.getElementById('progress-bar'),
     prevBtn: document.getElementById('prev-btn'),
     resultsGrid: document.getElementById('results-grid'),
-    restartBtn: document.getElementById('restart-btn')
+    restartBtn: document.getElementById('restart-btn'),
+    modal: document.getElementById('details-modal'),
+    modalBody: document.getElementById('modal-body'),
+    closeModalBtn: document.getElementById('close-modal-btn')
 };
 
 function initApp() {
@@ -60,11 +74,28 @@ function initApp() {
     
     DOM.quizSection.classList.remove('hidden');
     DOM.resultsSection.classList.add('hidden');
+    DOM.modal.classList.add('hidden');
     
     renderStep();
     
+    // Remove old listeners to avoid duplicates
+    DOM.prevBtn.replaceWith(DOM.prevBtn.cloneNode(true));
+    DOM.restartBtn.replaceWith(DOM.restartBtn.cloneNode(true));
+    DOM.closeModalBtn.replaceWith(DOM.closeModalBtn.cloneNode(true));
+    
+    // Re-select after cloning
+    DOM.prevBtn = document.getElementById('prev-btn');
+    DOM.restartBtn = document.getElementById('restart-btn');
+    DOM.closeModalBtn = document.getElementById('close-modal-btn');
+    
     DOM.prevBtn.addEventListener('click', handlePrev);
     DOM.restartBtn.addEventListener('click', initApp);
+    DOM.closeModalBtn.addEventListener('click', closeModal);
+    
+    // Close modal on outside click
+    DOM.modal.addEventListener('click', (e) => {
+        if(e.target === DOM.modal) closeModal();
+    });
 }
 
 function getActiveQuestions() {
@@ -82,7 +113,6 @@ function updateProgress() {
 }
 
 function renderStep() {
-    // Re-evaluate active questions in case conditions changed
     activeQuestions = getActiveQuestions();
     
     if (currentStep >= activeQuestions.length) {
@@ -94,7 +124,6 @@ function renderStep() {
 
     const question = activeQuestions[currentStep];
     
-    // Manage prev button
     if (currentStep === 0) {
         DOM.prevBtn.classList.add('hidden');
     } else {
@@ -118,7 +147,6 @@ function renderStep() {
 
     DOM.quizContent.innerHTML = html;
 
-    // Attach event listeners to options
     const optionBtns = document.querySelectorAll('.option-btn');
     optionBtns.forEach(btn => {
         btn.addEventListener('click', (e) => handleOptionSelect(question.id, btn.dataset.value));
@@ -128,7 +156,6 @@ function renderStep() {
 function handleOptionSelect(questionId, value) {
     userAnswers[questionId] = value;
     
-    // Add visual feedback before moving next
     const btns = document.querySelectorAll('.option-btn');
     btns.forEach(b => b.classList.remove('selected'));
     document.querySelector(`.option-btn[data-value="${value}"]`).classList.add('selected');
@@ -172,47 +199,46 @@ const styleTranslations = {
 };
 
 function calculateRecommendations() {
-    // Basic scoring algorithm
     let scoredDestinations = destinations.map(dest => {
         let score = 0;
         
-        // Match Location (Must match or heavily weighted)
         if (dest.location === userAnswers.location) {
             score += 10;
         } else {
-            score -= 100; // Filter out
+            score -= 100;
         }
 
-        // Match Duration
         if (dest.duration && dest.duration.includes(userAnswers.duration)) {
             score += 5;
         }
 
-        // Match Flight (if applicable)
         if (userAnswers.flight && dest.flight === userAnswers.flight) {
             score += 5;
         }
 
-        // Match Style
         if (dest.style && dest.style.includes(userAnswers.style)) {
             score += 5;
+        }
+
+        if (dest.bestSeasons && dest.bestSeasons.includes(userAnswers.season)) {
+            score += 5;
+        } else if (dest.bestSeasons) {
+            score -= 2;
         }
 
         return { ...dest, score };
     });
 
-    // Filter positive scores and sort
-    let recommendations = scoredDestinations
+    currentRecommendations = scoredDestinations
         .filter(d => d.score > 0)
         .sort((a, b) => b.score - a.score)
-        .slice(0, 3); // Top 3
+        .slice(0, 3);
 
-    if (recommendations.length === 0) {
-        // Fallback if too strict
-        recommendations = destinations.filter(d => d.location === userAnswers.location).slice(0, 3);
+    if (currentRecommendations.length === 0) {
+        currentRecommendations = destinations.filter(d => d.location === userAnswers.location).slice(0, 3);
     }
 
-    renderRecommendations(recommendations);
+    renderRecommendations(currentRecommendations);
 }
 
 function renderRecommendations(recs) {
@@ -230,11 +256,79 @@ function renderRecommendations(recs) {
                 <div class="card-tags">
                     ${dest.style.map(s => `<span class="tag">#${styleTranslations[s] || s}</span>`).join('')}
                 </div>
+                <button class="btn-details mt-4" data-id="${dest.id}">자세히 보기</button>
             </div>
         </div>
     `).join('');
 
     DOM.resultsGrid.innerHTML = html;
+
+    // Attach event listeners for details buttons
+    const detailBtns = document.querySelectorAll('.btn-details');
+    detailBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => openModal(btn.dataset.id));
+    });
+}
+
+function openModal(destId) {
+    const dest = destinations.find(d => d.id === destId);
+    if(!dest || !dest.details) return;
+
+    // Get the season string the user selected, or default to all if not selected
+    const userSeasonKey = userAnswers.season; 
+    let seasonText = '';
+    switch(userSeasonKey) {
+        case 'spring': seasonText = '🌸 봄(3~5월)'; break;
+        case 'summer': seasonText = '☀️ 여름(6~8월)'; break;
+        case 'autumn': seasonText = '🍁 가을(9~11월)'; break;
+        case 'winter': seasonText = '❄️ 겨울(12~2월)'; break;
+        default: seasonText = '선택한 계절';
+    }
+
+    const weatherInfo = userSeasonKey && dest.details.weather[userSeasonKey] 
+                        ? dest.details.weather[userSeasonKey] 
+                        : "사계절 내내 다양한 매력이 있는 곳입니다.";
+
+    const html = `
+        <div class="detail-header">
+            <h3>${dest.name}</h3>
+            <p class="detail-reason">💡 추천 이유: ${dest.details.reason}</p>
+        </div>
+        
+        <div class="detail-section">
+            <h4>${seasonText} 날씨 🌤️</h4>
+            <p>${weatherInfo}</p>
+        </div>
+
+        <div class="detail-section">
+            <h4>추천 명소 및 도시 📸</h4>
+            <p>${dest.details.spots}</p>
+        </div>
+
+        <div class="detail-section">
+            <h4>꼭 먹어봐야 할 맛집/음식 🍜</h4>
+            <p>${dest.details.food}</p>
+        </div>
+
+        <div class="detail-section">
+            <h4>추천 코스 (3일 기준) 🗺️</h4>
+            <p>${dest.details.course}</p>
+        </div>
+
+        <div class="detail-section">
+            <h4>화폐 💱</h4>
+            <p>${dest.details.currency}</p>
+        </div>
+    `;
+
+    DOM.modalBody.innerHTML = html;
+    DOM.modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+}
+
+function closeModal() {
+    DOM.modal.classList.add('hidden');
+    document.body.style.overflow = 'auto'; // Restore scrolling
 }
 
 // Start
